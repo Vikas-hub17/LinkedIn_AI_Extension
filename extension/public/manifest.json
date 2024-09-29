@@ -1,0 +1,29 @@
+{
+    "manifest_version": 3,
+    "name": "LinkedIn AI Reply Assistant",
+    "description": "Generates AI replies for LinkedIn messages.",
+    "version": "1.0",
+    "permissions": [
+      "activeTab",
+      "scripting"
+    ],
+    "action": {
+      "default_popup": "index.html"
+    },
+    "background": {
+      "service_worker": "background.js"
+    },
+    "content_scripts": [
+      {
+        "matches": ["*://*.linkedin.com/*"],
+        "js": ["contentScript.js"],
+        "run_at": "document_end"
+      }
+    ],
+    "icons": {
+      "16": "assets/ai-icon.svg",
+      "48": "assets/ai-icon.svg",
+      "128": "assets/ai-icon.svg"
+    }
+  }
+  

@@ -1,6 +1,4 @@
-import { defineWxtConfig } from 'wxt';
-
-export default defineWxtConfig({
+export default ({
   manifest: {
     name: 'LinkedIn AI Reply',
     version: '1.0',

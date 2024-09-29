@@ -1,100 +1,88 @@
-// Constants for selectors and dummy responses
-const MESSAGE_INPUT_SELECTOR = '.msg-form__contenteditable';
-const DUMMY_RESPONSE = "Thank you for the opportunity! If you have any more questions or if there's anything else I can help you with, feel free to ask.";
+// src/contentScripts/contentScript.ts
 
-let aiIcon: HTMLButtonElement | null = null;
+// Function to inject the AI icon next to the LinkedIn message input field
+function injectAIIcon() {
+  const messageInputField = document.querySelector('input[aria-label="Write a message…"]'); // LinkedIn message input field selector
 
-// Utility function to find the message input field
-function getMessageInput(): HTMLElement | null {
-  return document.querySelector(MESSAGE_INPUT_SELECTOR);
-}
+  if (messageInputField) {
+    const aiIcon = document.createElement('img');
+    aiIcon.src = chrome.runtime.getURL('assets/ai-icon.svg'); // Path to the AI icon
+    aiIcon.alt = "AI Reply";
+    aiIcon.id = "ai-reply-icon";
+    aiIcon.className = "fixed bottom-2 right-4 w-8 h-8 cursor-pointer hidden"; // Start hidden
 
-// Function to add AI icon on focus
-function showAIIcon() {
-  const messageInput = getMessageInput();
-  if (!messageInput || aiIcon) return; // If input is missing or icon is already present
+    // Append the icon to the message input container
+    messageInputField.parentNode?.appendChild(aiIcon);
 
-  // Create AI icon button
-  aiIcon = document.createElement('button');
-  aiIcon.innerHTML = `<svg>/* Your AI Icon SVG */</svg>`;
-  aiIcon.className = 'absolute right-2 top-2 cursor-pointer';
-  
-  // Append icon to message input's parent
-  messageInput.parentElement?.appendChild(aiIcon);
-
-  // Show modal on AI icon click
-  aiIcon.addEventListener('click', showModal);
-  
-  // Remove icon when input loses focus
-  messageInput.addEventListener('blur', hideAIIcon);
-}
-
-// Function to remove AI icon on blur
-function hideAIIcon() {
-  if (aiIcon) {
-    aiIcon.remove();
-    aiIcon = null;
+    // Add event listener to show modal when the icon is clicked
+    aiIcon.addEventListener('click', showModal);
   }
-}
 
-// Function to display modal for AI reply generation
-function showModal() {
-  const modalContainer = document.createElement('div');
-  modalContainer.id = 'ai-reply-modal';
-  document.body.appendChild(modalContainer);
+  // Show the AI icon when the message input field gains focus
+  messageInputField?.addEventListener('focus', () => {
+    const aiIcon = document.getElementById('ai-reply-icon');
+    aiIcon?.classList.remove('hidden'); // Remove 'hidden' class to make it visible
+  });
 
-  // Render the React modal inside the container
-  ReactDOM.render(
-    <Modal
-      onClose={() => closeModal(modalContainer)}
-      onInsert={(text: string) => insertTextIntoMessage(text)}
-    />,
-    modalContainer
-  );
-
-  // Close modal on clicking outside
-  window.addEventListener('click', (event) => {
-    if (event.target === modalContainer) {
-      closeModal(modalContainer);
-    }
+  // Hide the AI icon when the message input field loses focus
+  messageInputField?.addEventListener('blur', () => {
+    const aiIcon = document.getElementById('ai-reply-icon');
+    aiIcon?.classList.add('hidden'); // Add 'hidden' class to hide it
   });
 }
 
-// Function to close the modal and clean up
-function closeModal(modalContainer: HTMLDivElement) {
-  ReactDOM.unmountComponentAtNode(modalContainer);
-  modalContainer.remove();
+// Function to show the AI modal when the AI icon is clicked
+function showModal() {
+  const existingModal = document.getElementById('ai-reply-modal');
+  if (existingModal) return; // Prevent multiple modals from being added
+
+  const modal = document.createElement('div');
+  modal.id = 'ai-reply-modal';
+  modal.className = 'fixed inset-0 flex items-center justify-center bg-gray-600 bg-opacity-50';
+
+  modal.innerHTML = `
+    <div class="bg-white p-6 rounded-md shadow-lg w-96 relative">
+      <input type="text" id="ai-reply-input" class="w-full border p-2 rounded-md mb-4" placeholder="Your prompt..." />
+      <div class="flex justify-end gap-2">
+        <button id="generate-reply" class="bg-blue-500 text-white p-2 rounded-md">Generate</button>
+        <button id="close-modal" class="bg-gray-400 text-white p-2 rounded-md">Close</button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  // Close modal when clicking outside the modal content
+  modal.addEventListener('click', (event) => {
+    if (event.target === modal) {
+      closeModal();
+    }
+  });
+
+  // Generate reply button listener
+  document.getElementById('generate-reply')?.addEventListener('click', generateReply);
+
+  // Close modal button listener
+  document.getElementById('close-modal')?.addEventListener('click', closeModal);
 }
 
-// Function to insert generated text into LinkedIn's message input field
-function insertTextIntoMessage(text: string) {
-  const messageInput = getMessageInput();
-  if (!messageInput) {
-    console.error('Message input not found.');
-    return;
-  }
+// Function to close the modal
+function closeModal() {
+  const modal = document.getElementById('ai-reply-modal');
+  modal?.remove(); // Remove modal from DOM
+}
 
-  try {
-    (messageInput as HTMLElement).innerText = text;
-  } catch (error) {
-    console.error('Error inserting text:', error);
+// Function to generate the static AI reply and insert it into the message input field
+function generateReply() {
+  const messageInputField = document.querySelector('input[aria-label="Write a message…"]') as HTMLInputElement;
+  
+  const generatedResponse = 'Thank you for the opportunity! If you have any more questions or if there\'s anything else I can help you with, feel free to ask.';
+  
+  if (messageInputField) {
+    messageInputField.value = generatedResponse; // Set the value of the LinkedIn message input field
+    closeModal(); // Close the modal after inserting the response
   }
 }
 
-// Function to initialize AI icon functionality
-function initializeAIIcon() {
-  const messageInput = getMessageInput();
-  if (messageInput) {
-    messageInput.addEventListener('focus', showAIIcon);
-  }
-}
-
-// Observe DOM changes to attach event listeners to LinkedIn's messaging interface
-const observer = new MutationObserver(() => {
-  const messageInput = getMessageInput();
-  if (messageInput) {
-    messageInput.addEventListener('focus', showAIIcon);
-  }
-});
-
-observer.observe(document.body, { childList: true, subtree: true });
+// Inject the AI icon when the content script is loaded
+injectAIIcon();

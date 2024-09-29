@@ -1,4 +1,12 @@
 // src/contentScripts/contentScript.ts
+import React from 'react';
+import ReactDOM from 'react-dom';
+import App from '../App'; // Adjust the path if needed
+
+const root = document.createElement('div');
+document.body.appendChild(root);
+
+ReactDOM.render(<App />, root);
 
 // Function to inject the AI icon next to the LinkedIn message input field
 function injectAIIcon() {

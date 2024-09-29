@@ -12,7 +12,7 @@
       "matches": [
         "https://www.linkedin.com/*"
       ],
-      "js": ["../src/contentScripts/contenScripts.ts"],
+      "js": ["../entrypoints/content.ts"],
       "css": ["../src/styles/contentstyles.css"]
     }
   ],

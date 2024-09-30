@@ -14,7 +14,12 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "types": ["@types/chrome"]
+    "typeRoots": [
+      "./node_modules/@types", 
+      "./src/types" // if you have custom type definitions
+    ],
+    "types": ["chrome"] // Make sure to include 'chrome' here
   },
-  "include": ["src"]
+  "include": ["src/**/*", "wxt/**/*"], // Adjust according to your project structure
+  "exclude": ["node_modules"]
 }

@@ -1,7 +1,7 @@
 // src/contentScripts/contentScript.ts
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from '../App'; // Adjust the path if needed
+import App from './App'; // Adjust the path if needed
 
 const root = document.createElement('div');
 document.body.appendChild(root);

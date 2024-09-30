@@ -24,3 +24,9 @@ web-ext.config.ts
 *.njsproj
 *.sln
 *.sw?
+
+/node_modules
+/dist
+.vscode
+.DS_Store
+.env

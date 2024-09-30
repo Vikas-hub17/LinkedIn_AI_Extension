@@ -1,15 +1,13 @@
-// background.ts
-import { defineBackground } from 'wxt/sandbox';
-
-// Define the background script functionality
-defineBackground(() => {
-    console.log("Background script loaded");
-
-    // Example: Handle messages from content scripts or popup
-    chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-        if (request.action === 'requestResponse') {
-            // Send a response back to the content script or popup
-            sendResponse({ response: "Thank you for the opportunity! If you have any more questions or if there's anything else I can help you with, feel free to ask." });
-        }
-    });
-});
+// .wxt/entrypoints/background.ts
+chrome.runtime.onInstalled.addListener(() => {
+    console.log('LinkedIn AI Extension installed!');
+  });
+  
+  // Listener for messages (if needed in the future)
+  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.type === 'LOG_MESSAGE') {
+      console.log(message.payload);
+      sendResponse({ status: 'Logged' });
+    }
+  });
+  

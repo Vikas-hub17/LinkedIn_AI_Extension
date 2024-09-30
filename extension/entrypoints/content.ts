@@ -1,28 +1,12 @@
-// content.ts
-import { defineContentScript } from 'wxt/sandbox';
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import App from '../src/App';
 
-// Define the content script functionality
-defineContentScript(() => {
-    console.log("Content script loaded");
+// Add a div for rendering the extension UI
+const container = document.createElement('div');
+container.id = 'linkedin-ai-extension';
+document.body.appendChild(container);
 
-    // Function to show the AI icon when the message input field is focused
-    const inputField = document.querySelector('input[aria-label="Message"]');
-
-    if (inputField) {
-        inputField.addEventListener('focus', () => {
-            // Logic to show the AI icon
-            // e.g., show your icon here
-        });
-
-        inputField.addEventListener('blur', () => {
-            // Logic to hide the AI icon
-            // e.g., hide your icon here
-        });
-    }
-
-    // You can add more functionality as needed, e.g., handling messages
-    chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-        // Handle messages from background or popup
-        // e.g., process commands
-    });
-});
+// Render the React app inside the container
+const root = createRoot(container);
+root.render(<App />);

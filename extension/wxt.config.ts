@@ -1,4 +1,13 @@
+import { defineConfig } from 'wxt';
+import react from '@vitejs/plugin-react';
+
 export default ({
+
+  build: {
+    target: 'chrome-mv3',
+    plugins: [react()],
+  },
+
   manifest: {
     name: 'LinkedIn AI Reply',
     version: '1.0',
@@ -22,3 +31,5 @@ export default ({
     },
   },
 });
+
+

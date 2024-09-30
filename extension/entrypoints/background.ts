@@ -1,11 +1,15 @@
-chrome.runtime.onInstalled.addListener(() => {
-  console.log('LinkedIn AI Reply Extension Installed');
-});
+// background.ts
+import { defineBackground } from 'wxt/sandbox';
 
-// Listen for messages from the popup or content scripts
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === 'someAction') {
-      // Handle the action
-      sendResponse({ result: 'Response from background script' });
-  }
+// Define the background script functionality
+defineBackground(() => {
+    console.log("Background script loaded");
+
+    // Example: Handle messages from content scripts or popup
+    chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+        if (request.action === 'requestResponse') {
+            // Send a response back to the content script or popup
+            sendResponse({ response: "Thank you for the opportunity! If you have any more questions or if there's anything else I can help you with, feel free to ask." });
+        }
+    });
 });

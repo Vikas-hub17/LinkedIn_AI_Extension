@@ -1,43 +1,41 @@
-import React, { useState } from 'react';
-import Icon from '../src/components/Icon';
+import React, { useState, useEffect } from 'react';
 import Modal from '../src/components/Modal';
+import AiIcon from '../src/components/AiIcon';
 
 const App: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [generatedResponse, setGeneratedResponse] = useState('');
+  const [isIconVisible, setIsIconVisible] = useState(false);
 
-  // Function to handle opening the modal
-  const handleIconClick = () => {
-    setIsModalOpen(true);
-  };
+  // Show AI icon when LinkedIn message input is focused
+  useEffect(() => {
+    const linkedInInput = document.querySelector('div.msg-form__contenteditable');
+    if (linkedInInput) {
+      linkedInInput.addEventListener('focus', () => setIsIconVisible(true));
+      linkedInInput.addEventListener('blur', () => setIsIconVisible(false));
+    }
+  }, []);
 
-  // Function to close the modal
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setGeneratedResponse(''); // Reset the generated response when closing
-  };
+  // Function to open modal
+  const openModal = () => setIsModalOpen(true);
 
-  // Function to handle inserting the generated response
-  const handleInsertResponse = (response: string) => {
-    const messageInput = document.querySelector('textarea[aria-label="Write a message…"]') as HTMLTextAreaElement;
-    if (messageInput) {
-      const start = messageInput.selectionStart;
-      const end = messageInput.selectionEnd;
-      const currentValue = messageInput.value;
-      // Insert the response at the current cursor position
-      messageInput.value = currentValue.substring(0, start) + response + currentValue.substring(end);
-      messageInput.focus(); // Set focus back to the input field
+  // Function to close modal
+  const closeModal = () => setIsModalOpen(false);
+
+  // Function to insert response into LinkedIn input field
+  const insertResponseToLinkedIn = (response: string) => {
+    const inputField = document.querySelector('div.msg-form__contenteditable');
+    if (inputField) {
+      inputField.textContent = response;
+      inputField.focus(); // Focus the input field after insertion
     }
   };
 
   return (
     <div>
-      <Icon onClick={handleIconClick} />
-      <Modal
-        isOpen={isModalOpen}
-        onClose={closeModal}
-        onInsert={handleInsertResponse}
-      />
+      {isIconVisible && <AiIcon onClick={openModal} />}
+      {isModalOpen && (
+        <Modal closeModal={closeModal} insertResponse={insertResponseToLinkedIn} />
+      )}
     </div>
   );
 };

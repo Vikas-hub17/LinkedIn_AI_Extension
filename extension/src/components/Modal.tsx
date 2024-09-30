@@ -1,87 +1,60 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 interface ModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onInsert: (response: string) => void;
+  closeModal: () => void;
+  insertResponse: (response: string) => void;
 }
 
-const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onInsert }) => {
-  const [command, setCommand] = useState('');
-  const [response, setResponse] = useState(''); // Static response
+const Modal: React.FC<ModalProps> = ({ closeModal, insertResponse }) => {
+  const [response, setResponse] = useState<string>('');
+  const staticResponse = `Thank you for the opportunity! If you have any more questions or if there's anything else I can help you with, feel free to ask.`;
 
-  // Function to handle the Generate button click
-  const handleGenerate = () => {
-    // Set the static response when the button is clicked
-    setResponse('Thank you for the opportunity! If you have any more questions or if there\'s anything else I can help you with, feel free to ask.');
+  // Handles generating the dummy response
+  const handleGenerateResponse = () => {
+    setResponse(staticResponse);
   };
 
-  // Effect to close the modal when clicked outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const modal = document.getElementById('modal');
-      const modalContent = document.getElementById('modal-content');
-      if (modal && modalContent && !modalContent.contains(event.target as Node)) {
-        onClose();
-      }
-    };
-
-    // Attach the event listener
-    document.addEventListener('mousedown', handleClickOutside);
-    
-    // Cleanup the event listener
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [onClose]);
-
-  // Function to handle Insert button click
-  const handleInsert = () => {
-    onInsert(response);
-    onClose();
+  // Handles inserting the generated response into the input field
+  const handleInsertResponse = () => {
+    insertResponse(response);
+    closeModal(); // Close the modal after insertion
   };
-
-  if (!isOpen) return null; // Don't render anything if modal is not open
 
   return (
-    <div
-      id="modal"
-      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
-    >
-      <div
-        id="modal-content"
-        className="bg-white rounded-lg shadow-lg p-6 w-1/3"
-      >
-        <h2 className="text-xl font-semibold mb-4">Enter your command</h2>
+    <div className="fixed inset-0 flex items-center justify-center z-50 bg-gray-800 bg-opacity-50">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+        <h2 className="text-xl font-semibold mb-4">Generate a response</h2>
         <textarea
-          className="border rounded p-2 w-full mb-4"
-          value={command}
-          onChange={(e) => setCommand(e.target.value)}
-          placeholder="Your prompt..."
+          value={response}
+          readOnly
+          placeholder="Your prompt"
+          className="w-full h-24 p-2 border rounded mb-4 resize-none"
         />
+        <div className="flex justify-between">
+          <button
+            onClick={handleGenerateResponse}
+            className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
+          >
+            Generate
+          </button>
+          <button
+            onClick={handleInsertResponse}
+            className="bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700"
+          >
+            Insert
+          </button>
+          <button
+            className="bg-gray-300 text-gray-700 py-2 px-4 rounded cursor-not-allowed"
+            disabled
+          >
+            Regenerate
+          </button>
+        </div>
         <button
-          onClick={handleGenerate}
-          className="bg-blue-500 text-white rounded px-4 py-2 mr-2"
+          onClick={closeModal}
+          className="mt-4 text-red-600 hover:text-red-800"
         >
-          Generate
-        </button>
-        <button
-          onClick={handleInsert}
-          className="bg-green-500 text-white rounded px-4 py-2"
-        >
-          Insert
-        </button>
-        {response && (
-          <div className="mt-4">
-            <h3 className="font-semibold">Generated Response:</h3>
-            <p>{response}</p>
-          </div>
-        )}
-        <button
-          onClick={onClose}
-          className="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
-        >
-          &times;
+          Close
         </button>
       </div>
     </div>

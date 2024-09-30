@@ -1,8 +1,11 @@
 // .wxt/entrypoints/background.ts
-chrome.runtime.onInstalled.addListener(() => {
+import { defineBackground } from 'wxt/sandbox';
+
+const backgroundScript = defineBackground(() => {
+  chrome.runtime.onInstalled.addListener(() => {
     console.log('LinkedIn AI Extension installed!');
   });
-  
+
   // Listener for messages (if needed in the future)
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === 'LOG_MESSAGE') {
@@ -10,4 +13,6 @@ chrome.runtime.onInstalled.addListener(() => {
       sendResponse({ status: 'Logged' });
     }
   });
-  
+});
+
+export default backgroundScript;
